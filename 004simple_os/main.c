@@ -28,17 +28,14 @@ void hardware_init(init_func init[])
 	}
 }
 
-void board_init(void)
-{
-   hardware_init(init);
-}	
+	
 
 char c = 'a';
 int main(void)
 {
 	
-	board_init();
-/*	
+	hardware_init(init);
+	
 	char *p = "this is a string";
 	int num = 255;
 	int t = -1;
@@ -55,8 +52,8 @@ int main(void)
 	printfk("%u\r\n",t);
 	printfk("%x\r\n",t);
 	printfk("%o\r\n",t);
-*/
-	uart_send_str("simple os\r\n");
+
+	
 	GPFCON = 0x0100;	
 	GPFDAT = 0;
 
