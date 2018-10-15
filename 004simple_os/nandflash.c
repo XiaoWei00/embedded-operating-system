@@ -23,11 +23,11 @@ void nandflash_init(void)
 
 	if(!IsNandflashRunning())
 	{
-		printfk("nand flash init is error!\r\n");
+		//printfk("nand flash init is error!\r\n");
 	}
 	else
 	{
-		printfk("nand flash init is ok!\r\n");
+		//printfk("nand flash init is ok!\r\n");
 	}	
 
 }

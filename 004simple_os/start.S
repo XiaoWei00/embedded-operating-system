@@ -92,17 +92,17 @@ reset:
     nand flash启动，nand flash前4KB代码拷贝到
     片内SRAM中
 	*/
-//	ldr r0, =0
-//	ldr r1, =0
-//	str r2, [r0]  /*保存0地址处数值*/
-//	ldr r1, [r0]  /*向0地址处写0*/
-//	str r3, [r0]  /*读取0地址处数值*/
-//	cmp r3, r0   /*判断是否写成功*/
+	ldr r0, =0
+	ldr r1, =0
+	str r2, [r0]  /*保存0地址处数值*/
+	ldr r1, [r0]  /*向0地址处写0*/
+	str r3, [r0]  /*读取0地址处数值*/
+	cmp r3, r0   /*判断是否写成功*/
 	/*写成功,为nand flash启动*/
-//	streq r3, [r0] /*恢复0地址数值*/ 
-//	bne nor_start
+	streq r3, [r0] /*恢复0地址数值*/ 
+	bne nor_start
 
-/*	
+
 nand_start:	
 	//nand flash 启动 4K
 	msr cpsr, #(DISABLE_IRQ | DISABLE_FIQ | SVC_MOD)
@@ -124,7 +124,7 @@ nand_start:
 	ldr sp, =(SYS_STACK + NAND_BASE)
 	
 	b  level1_init
-*/	
+
 
 nor_start:
 	//nor flash 启动/
@@ -170,6 +170,7 @@ level1_init:
 
 	bl sysclock_init
 	bl sdram_init
+	bl nandflash_init
 	bl copy2sdram
 	bl bss_init
 /*主程序*/
