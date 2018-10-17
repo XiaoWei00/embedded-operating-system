@@ -1,21 +1,15 @@
 
 #include "s3c2440.h"
 #include "lib.h"
-#include "clock.h"
 #include "uart.h"
-#include "sdram.h"
-#include "nandflash.h"
-#include "level1init.h"
+#include "timer.h"
+
 
 typedef void (*init_func)(void);
 
 static init_func init[]={
-//	sysclock_init,
 	uart_init,
-//	sdram_init,
-//	nandflash_init,
-//	copy2sdram,
-//	bss_init,
+	timer_init,
 	NULL
 };
 
@@ -33,7 +27,7 @@ void hardware_init(init_func init[])
 char c = 'a';
 int main(void)
 {
-	
+	enable_irq();
 	hardware_init(init);
 	
 	char *p = "this is a string";
@@ -56,7 +50,7 @@ int main(void)
 	
 	GPFCON = 0x0100;	
 	GPFDAT = 0;
-
+	//timer_init();
 	return 0;
 	
 }

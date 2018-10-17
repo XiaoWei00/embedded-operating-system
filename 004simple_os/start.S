@@ -23,7 +23,6 @@
 .equ DISABLE_IRQ,   0x80
 .equ DISABLE_FIQ,	0x40
 
-
 .equ SYS_MOD,	0b11111
 .equ USR_MOD,   0b10000
 .equ SVC_MOD,   0b10011

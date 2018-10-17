@@ -1,13 +1,14 @@
 
 #ifndef _S3C2440_H_
 #define _S3C2440_H_
-
+#include "type.h"
 /*
 默认设置为小端模式
 */
 #define NULL 0
 #define _REG(X) (*((volatile unsigned int*)(X)))
 #define _REG_BYTE(X) (*((volatile unsigned char*)(X)))
+#define _REG_DBYTES(X) (*((volatile unsigned short int*)(X)))
 
 /*WATCHDOG TIMER*/
 #define WTCON _REG(0x53000000)
@@ -62,6 +63,20 @@ TXD0/GPH2
 
 #define NFSTAT _REG_BYTE(0x4E000020)
 
+
+/*INTERRPUT CONTROLLER*/
+#define INTMSK _REG(0X4A000008)
+#define SRCPND _REG(0X4A000000)
+#define INTPND _REG(0X4A000010)
+#define INTOFFSET  _REG(0x4A000014)
+
+
+
+/*TIMER*/
+#define TCFG0 _REG(0x51000000) 
+#define TCFG1 _REG(0x51000004) 
+#define TCON _REG(0x51000008) 
+#define TCNTB4 _REG(0x5100003C)
 #endif
 
 
