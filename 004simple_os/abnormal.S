@@ -38,6 +38,7 @@ irq:
 */
    
   //ÖĞ¶ÏÇ¶Ì×
+/*  
 	sub lr, lr, #4
 	stmfd sp!, {lr}
 	mrs lr, spsr
@@ -51,9 +52,9 @@ irq:
 	ldmfd sp!, {lr}
 	msr spsr, lr 
 	ldmfd sp!, {pc}^
-	
+*/	
   	//ÖĞ¶ÏÇ¶Ì×ÓÅ»¯
-/*	sub lr, lr, #4
+	sub lr, lr, #4
 	str lr, [sp, #-0x4]
 	mrs lr, spsr
 	str lr, [sp, #-0x8]
@@ -71,7 +72,7 @@ irq:
 	ldmfd sp!, {r0-r12,lr}
 	msr spsr, lr
 	ldmfd sp!, {lr,pc}^
-*/	
+
 fiq:
 	nop
 	

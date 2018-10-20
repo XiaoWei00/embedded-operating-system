@@ -32,7 +32,7 @@ void interrupt_process(void)
 	printfk("interrupt occured\r\n");
 
 	//中断嵌套
-	disable_irq(); /*在中断模式下，禁止再次发生中断*/
+	//disable_irq(); /*在中断模式下，禁止再次发生中断*/
 }
 
 void enable_irq(void)
