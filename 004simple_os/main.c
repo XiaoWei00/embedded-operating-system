@@ -22,7 +22,12 @@ void hardware_init(init_func init[])
 	}
 }
 
-	
+void delay(void)
+{
+	int i = 0,j = 0;
+	for(i = 0;i < 4000;i++)
+		for(j = 0 ; j < 100;j++);
+}	
 
 char c = 'a';
 int main(void)
@@ -46,11 +51,15 @@ int main(void)
 	printfk("%u\r\n",t);
 	printfk("%x\r\n",t);
 	printfk("%o\r\n",t);
-
+	
 	
 	GPFCON = 0x0100;	
 	GPFDAT = 0;
-	//timer_init();
+	while(1)
+	{
+		printfk("wait\r\n");
+		delay();
+	}	
 	return 0;
 	
 }

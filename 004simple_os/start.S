@@ -2,10 +2,24 @@
 
 
 
+#include "armv4t.h"
 
+
+
+/*堆栈*/
+.equ STACK_TOP,  0x1000 /*4KB*/
+
+.equ NAND_BASE,  0
+.equ NOR_BASE, 0x40000000
+
+.equ SVC_STACK,  STACK_TOP
+.equ FIQ_STACK, (SVC_STACK - 0x154)   /*340个字节*/
+.equ IRQ_STACK, (FIQ_STACK - 0x154)	
+.equ UND_STACK, (IRQ_STACK - 0x154)	
+.equ ABT_STACK, (UND_STACK - 0x154)
+.equ SYS_STACK, (ABT_STACK - 0x154) /*usr sys*/	
 
 .text
-
 .global _start
 .extern undef_ins
 .extern swi
@@ -13,36 +27,6 @@
 .extern abort_data
 .extern irq
 .extern fiq
-
-
-
-/**/
-
-/*模式CPSR寄存器*/
-
-.equ DISABLE_IRQ,   0x80
-.equ DISABLE_FIQ,	0x40
-
-.equ SYS_MOD,	0b11111
-.equ USR_MOD,   0b10000
-.equ SVC_MOD,   0b10011
-.equ FIQ_MOD,	0b10001
-.equ IRQ_MOD,	0b10010
-.equ UND_MOD,	0b11011
-.equ ABT_MOD,	0b10111
-
-/*堆栈*/
-.equ STACK_TOP,  4096  /*4KB*/
-
-.equ NAND_BASE,  0
-.equ NOR_BASE, 0x40000000
-
-.equ SVC_STACK,  STACK_TOP
-.equ IRQ_STACK, (SVC_STACK - 100)   /*100个字节*/
-.equ FIQ_STACK, (IRQ_STACK - 100)	
-.equ UND_STACK, (FIQ_STACK - 100)	
-.equ ABT_STACK, (UND_STACK - 100)
-.equ SYS_STACK, (ABT_STACK - 100)	
 
 _start:
 	/*异常向量表*/  
@@ -104,22 +88,22 @@ reset:
 
 nand_start:	
 	//nand flash 启动 4K
-	msr cpsr, #(DISABLE_IRQ | DISABLE_FIQ | SVC_MOD)
+	TO_SVCMOD
 	ldr sp, =(SVC_STACK + NAND_BASE)
 
-	msr cpsr, #(DISABLE_IRQ | DISABLE_FIQ | IRQ_MOD)
+	TO_IRQMOD
 	ldr sp, =(IRQ_STACK + NAND_BASE)
 
-	msr cpsr, #(DISABLE_IRQ | DISABLE_FIQ | FIQ_MOD)
+	TO_FIQMOD
 	ldr sp, =(FIQ_STACK + NAND_BASE)
 
-	msr cpsr, #(DISABLE_IRQ | DISABLE_FIQ | ABT_MOD)
+	TO_ABTMOD
 	ldr sp, =(ABT_STACK + NAND_BASE)
 
-	msr cpsr, #(DISABLE_IRQ | DISABLE_FIQ | UND_MOD)
+	TO_UNDMOD
 	ldr sp, =(UND_STACK + NAND_BASE)
 
-	msr cpsr, #(DISABLE_IRQ | DISABLE_FIQ | SYS_MOD)
+	TO_SYSMOD
 	ldr sp, =(SYS_STACK + NAND_BASE)
 	
 	b  level1_init
@@ -127,23 +111,23 @@ nand_start:
 
 nor_start:
 	//nor flash 启动/
-	msr cpsr, #(DISABLE_IRQ | DISABLE_FIQ | SVC_MOD)
-	ldr sp, =SVC_STACK + NOR_BASE 
+	TO_SVCMOD
+	ldr sp, =(SVC_STACK + NOR_BASE) 
 
-	msr cpsr, #(DISABLE_IRQ | DISABLE_FIQ | IRQ_MOD)
-	ldr sp, =IRQ_STACK + NOR_BASE
+	TO_IRQMOD
+	ldr sp, =(IRQ_STACK + NOR_BASE)
 
-	msr cpsr, #(DISABLE_IRQ | DISABLE_FIQ | FIQ_MOD)
-	ldr sp, =FIQ_STACK + NOR_BASE
+	TO_FIQMOD
+	ldr sp, =(FIQ_STACK + NOR_BASE)
 
-	msr cpsr, #(DISABLE_IRQ | DISABLE_FIQ | ABT_MOD)
-	ldr sp, =ABT_STACK + NOR_BASE
+	TO_ABTMOD
+	ldr sp, =(ABT_STACK + NOR_BASE)
 
-	msr cpsr, #(DISABLE_IRQ | DISABLE_FIQ | UND_MOD)
-	ldr sp, =UND_STACK + NOR_BASE
+	TO_UNDMOD
+	ldr sp, =(UND_STACK + NOR_BASE)
 
-	msr cpsr, #(DISABLE_IRQ | DISABLE_FIQ | SYS_MOD)
-	ldr sp, =SYS_STACK + NOR_BASE
+	TO_SYSMOD
+	ldr sp, =(SYS_STACK + NOR_BASE)
 
 //	ldr sp, =4096+0x40000000   /*nor启动*/
 //	ldr sp, =4096
