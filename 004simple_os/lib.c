@@ -2,10 +2,8 @@
 #include "math.h"
 #include "lib.h"
 /*
-
-
+内核打印
 */
-
 p_putstr out_str = NULL ;
 
 #define PBUFFMAX 30
@@ -13,8 +11,6 @@ static char printBuffer[PBUFFMAX];
 static unsigned char printFlag;/*0---29*/
 
 #define  pbuff_isfull() (printFlag > 28 ? 1 : 0)
-
-
 
 static int int2str(int n,char p[],int d)
 {
@@ -86,8 +82,6 @@ static void transform_dxo(va_list arg,int d)
 	 	str_to_pbuffer(count,s);		
 		
 }
-
-
 
 int printfk(const char *fmt,...)
 {
@@ -176,4 +170,65 @@ int printfk(const char *fmt,...)
 	return 1;
 
 }
+
+/*
+
+通用链表
+
+*/
+
+void listhead_init(list_head *list)
+{
+	list->next = list;
+	list->prev = list;
+}
+static void list_add(list_head *newnode, list_head *next, list_head *prev)
+{
+		newnode->prev = prev;
+		newnode->next = next;
+
+		prev->next = newnode;
+		next->prev = newnode;
+}
+void list_add_head(list_head *head, list_head *newnode)
+{
+	list_add(newnode,head->next,head);
+}
+void list_add_tail(list_head *head, list_head *newnode)
+{
+	list_add(newnode,head,head->prev);
+}
+void list_del(list_head *node)
+{
+	node->prev->next = node->next;
+	node->next->prev = node->prev;
+}	
+u8 list_empty(const list_head *head)
+{
+	return head->next == head;
+}
+
+void list_add_chain_head(list_head *head, list_head *ch, list_head *ct)
+{
+	head->next->prev = ct;
+	ct->next = head->next;
+	
+	head->next = ch;
+	ch->prev = head;
+	
+}
+void list_add_chain_tail(list_head *head, list_head *ch, list_head *ct)
+{
+	head->prev->next = ch;
+	ch->prev = head->prev;
+	ct->next = head;
+	head->prev = ct;
+}
+
+void list_remove_chain(list_head *ch, list_head *ct)
+{
+	ch->prev->next = ct->next;
+	ct->next->prev = ch->prev;
+}
+
 

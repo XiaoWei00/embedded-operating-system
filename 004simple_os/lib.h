@@ -2,7 +2,7 @@
 #ifndef _LIB_H_
 #define _LIB_H_
 
-#define NULL 0
+#include "type.h"
 /*
 printf(const char *fmt,...)
 */
@@ -24,7 +24,43 @@ typedef void (*p_putstr)(const char *);
 
 extern p_putstr out_str;
 
+
+/*通用链表*/
+typedef struct list_head_t list_head;
+
+struct list_head_t
+{
+	list_head *prev;
+	list_head *next;
+};
+
+#define memberoffset(type, member)  ((u32)&(((type *)0)->member))
+
+#define list_for_each(pos, head) for(pos = (head)->next; pos != (head); pos = pos->next)
+
+/*宏定义，不能进行类型检查*/
+//#define list_entry(ptr, type, member) (type *)((char *)(ptr) - memberoffset(type,member))
+
+#define list_entry(ptr, type, member) \
+	({  const typeof(((type *)0)->member) *mptr = (ptr); \
+		(type *)((char *)mptr - memberoffset(type, member));})  	
+/*
+typeof GNU C 标准中的 typeof 关键字
+typeof 是自动推导后面 ( ) 里的数据类型
+*/
+
+void listhead_init(list_head * list);
+void list_add_head(list_head * head, list_head * newnode);
+void list_add_tail(list_head * head, list_head * newnode);
+void list_add_chain_head(list_head * head, list_head * ch, list_head * ct);
+void list_add_chain_tail(list_head * head, list_head * ch, list_head * ct);
+void list_remove_chain(list_head * ch, list_head * ct);
+
+
 #endif
+
+
+
 
 
 

@@ -26,9 +26,6 @@ void timer_init(void)
 	TCON |= (1 << 20);
 	TCON &= (~(1 << 21));
 
-
-	
-	
  	unmask_int(INT_IIMER4);
 }
 

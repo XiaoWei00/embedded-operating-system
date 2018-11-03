@@ -4,8 +4,6 @@
 
 #include "armv4t.h"
 
-
-
 /*¶ÑÕ»*/
 .equ STACK_TOP,  0x1000 /*4KB*/
 

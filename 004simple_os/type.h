@@ -1,6 +1,9 @@
 #ifndef _TYPE_H
 #define _TYPE_H
 
+
+#define NULL 0
+
 #define U32MAX ((u32)~0)
 #define U32MIN ((u32)0)
 #define S32MAX ((s32)(U32MAX >> 1))

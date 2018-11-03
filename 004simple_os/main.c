@@ -3,13 +3,14 @@
 #include "lib.h"
 #include "uart.h"
 #include "timer.h"
-
+#include "memory.h"
 
 typedef void (*init_func)(void);
 
 static init_func init[]={
 	uart_init,
-	timer_init,
+	//timer_init,
+	page_map_init,
 	NULL
 };
 
@@ -52,14 +53,28 @@ int main(void)
 	printfk("%x\r\n",t);
 	printfk("%o\r\n",t);
 	
+	s8 *p1 = (s8 *)get_free_pages(0);
+	printfk("p1 = %x\r\n",p1);
+
+	s8 *p2 = (s8 *)get_free_pages(6);
+	printfk("p2 = %x\r\n",p2);
+
+	s8 *p3 = get_free_pages(8);
+	printfk("p3 = %x\r\n",p3);
+	
+	put_free_pages(p1,0);
+	put_free_pages(p2,0);
+	put_free_pages(p3,0);
 	
 	GPFCON = 0x0100;	
 	GPFDAT = 0;
+	/*	
 	while(1)
 	{
 		printfk("wait\r\n");
 		delay();
-	}	
+	}
+	*/
 	return 0;
 	
 }

@@ -5,7 +5,7 @@
 /*
 默认设置为小端模式
 */
-#define NULL 0
+
 #define _REG(X) (*((volatile unsigned int*)(X)))
 #define _REG_BYTE(X) (*((volatile unsigned char*)(X)))
 #define _REG_DBYTES(X) (*((volatile unsigned short int*)(X)))
