@@ -35,6 +35,10 @@ int main(void)
 {
 	enable_irq();
 	hardware_init(init);
+
+	kmalloc_init();
+
+	
 	
 	char *p = "this is a string";
 	int num = 255;
@@ -65,6 +69,20 @@ int main(void)
 	put_free_pages(p1,0);
 	put_free_pages(p2,0);
 	put_free_pages(p3,0);
+
+
+	s8 *p4 = (s8 *)kmalloc(18);
+	printfk("p4 = %x\r\n",p4);
+
+	s8 *p5 = (s8 *)kmalloc(44);
+	printfk("p5 = %x\r\n",p5);
+
+	s8 *p6 = kmalloc(345);
+	printfk("p6 = %x\r\n",p6);
+	
+	kfree(p4);
+	kfree(p5);
+	kfree(p6);
 	
 	GPFCON = 0x0100;	
 	GPFDAT = 0;

@@ -1,5 +1,9 @@
 #include "memory.h"
 
+/*
+buddy
+*/
+
 static list_head page_buddy[MAX_BUDDY_PAGE_NUM];
 
 static void page_buddy_init(void)
@@ -191,6 +195,157 @@ void put_free_pages(void *addr,s32 order)
 	free_pages(addr_page((u32)addr),order);
 }	
 
+/*
+slab
+*/
+static s8 memcachesize_order(u32 size)
+{
+	s8 order = 0;
+	for(; order <= MEMCACHE_MAX_ORDER; order++)
+	{
+		if(size <= MEMCACHE_MAX_PAGEWAST * BUDDY_PAGES_NUM(order))
+		{
+			return order;
+		}	
+	}	
+	return -1;
+}
 
+static u32 manage_memcache(void *addr,s8 order,u32 size)
+{
+	u32 num = 1;
+	s8 *p = (s8 *)addr;
+	u32 *wp = (u32 *)addr;
+		
+	u32 aSize = PAGE_SIZE * BUDDY_PAGES_NUM(order) - size;
+	for( ; size <= aSize; aSize -= size, num++)
+	{
+		p += size;
+		*wp = (u32)p;
+		wp = (u32 *)p;
+	}
+	*wp = NULL;
+	
+	return num;
+}	
+static memcache *creat_memcache(memcache *mc, u32 size)
+{
+	
+	s8 order = memcachesize_order(size);
+	if(order == -1)
+		return NULL;
+	
+	page *pg = alloc_pages(order);
+	if(pg == NULL)
+		return NULL;
+	
+	mc->memcachePageStart = pg;
+	int i = 0;
+	for(; i < (1 << order); i++)
+	{
+		(pg + i)->pmc = mc;
+	}		
 
+	mc->memcachePageEnd = buddy_end(mc->memcachePageStart, order);
+	mc->memcachePageEnd->list.next = NULL; // ? 
+	mc->memcacheBuddyOrder = order;
+	mc->memcacheSize = size;
+	mc->nextcache = page_addr(mc->memcachePageStart);
 
+	
+	mc->memcacheNum = manage_memcache(mc->nextcache,order,size);
+
+	return mc;
+	
+}
+
+static void *alloc_obj_memcache(memcache *mc)
+{
+	if(mc == NULL)
+		return NULL;
+	
+	u32 num = mc->memcacheNum;
+	void *ret = NULL;
+	if(num == 0)
+	{
+		page *pg = alloc_pages(mc->memcacheBuddyOrder);
+		if(pg == NULL)
+			return NULL;
+		
+		void *addr = page_addr(pg);
+		mc->memcacheNum = manage_memcache(addr, mc->memcacheBuddyOrder, mc->memcacheSize);
+		mc->nextcache = addr;
+		mc->memcachePageEnd->list.next = &(pg->list);
+		mc->memcachePageEnd = buddy_end(pg, mc->memcacheBuddyOrder);
+		mc->memcachePageEnd->list.next = NULL;
+	}
+	
+	ret = mc->nextcache;
+	mc->nextcache = (void *)(*((u32 *)mc->nextcache));	
+	(mc->memcacheNum)--;
+	
+	return ret;
+
+}
+
+static void *free_obj_memcache(memcache *mc, void *obj)
+{
+	void *addr = mc->nextcache;
+	*((u32 *)obj) = (u32)addr;
+	mc->nextcache = obj;
+	(mc->memcacheNum)++;
+}
+
+static void destroy_memcache(memcache *mc)
+{
+	u32 order = mc->memcacheBuddyOrder;
+	page *spg = mc->memcachePageStart;
+	page *epg =  buddy_end(spg, order);
+	
+	while((epg->list).next != NULL)
+	{	
+		free_pages(spg, order);
+
+		list_head *lh = epg->list.next;
+
+		spg = list_entry(lh, page, list);
+
+		epg = buddy_end(spg, order);
+	}
+
+}
+
+/*
+kmalloc
+*/
+
+static memcache gmc[SLAB_NUM] = {{0,0,0,NULL,NULL,NULL},};
+
+int kmalloc_init(void)
+{	
+	int i = 0;
+	for(; i < SLAB_NUM; i++)
+	{
+		if(creat_memcache(&gmc[i], (i + 1) * SLAB_BASE_SIZE) == NULL)
+		{
+			return -1;
+		}		
+	}	
+
+	return 0;
+}
+void *kmalloc(u32 size)
+{
+	u16 index = size / SLAB_BASE_SIZE;
+
+	if(index > SLAB_NUM)
+		return NULL;
+
+	return alloc_obj_memcache(&gmc[index]);
+
+}
+void kfree(void *addr)
+{
+	page *pg = addr_page((u32)addr);
+	free_obj_memcache(pg->pmc,addr);
+}	
