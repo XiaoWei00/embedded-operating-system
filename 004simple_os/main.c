@@ -4,7 +4,7 @@
 #include "uart.h"
 #include "timer.h"
 #include "memory.h"
-
+#include "storage.h"
 typedef void (*init_func)(void);
 
 static init_func init[]={
@@ -38,6 +38,19 @@ int main(void)
 
 	kmalloc_init();
 
+	ramdisk_init();
+
+	s8 buff[10] = {'0','1','2','3','4','5','6','7','8','9'};
+
+	
+	storage_device[RAMDISK]->dout(storage_device[RAMDISK],0,buff,sizeof(buff));
+
+	int i = 0;
+	for(; i < sizeof(buff); i++)
+	{
+		printfk("%c\r\n",buff[i]);
+		printfk("%c\r\n",*((char *)(storage_device[RAMDISK]->start_pos + i)));
+	}
 	
 	
 	char *p = "this is a string";

@@ -4,10 +4,9 @@
 
 #include "type.h"
 /*
+
 printf(const char *fmt,...)
-*/
-/*
-可变参数
+
 */
 #define _INTSIZEOFF(n) ((sizeof(n) + sizeof(int) - 1 ) &  ~(sizeof(int) - 1))
 
@@ -25,7 +24,11 @@ typedef void (*p_putstr)(const char *);
 extern p_putstr out_str;
 
 
-/*通用链表*/
+/*
+list
+
+通用链表
+*/
 typedef struct list_head_t list_head;
 
 struct list_head_t
@@ -56,6 +59,14 @@ void list_add_chain_head(list_head * head, list_head * ch, list_head * ct);
 void list_add_chain_tail(list_head * head, list_head * ch, list_head * ct);
 void list_remove_chain(list_head * ch, list_head * ct);
 
+
+
+/*
+
+mem
+
+*/
+void *memcpy(const void *src, void *des, u32 size);
 
 #endif
 

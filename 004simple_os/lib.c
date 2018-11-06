@@ -172,9 +172,8 @@ int printfk(const char *fmt,...)
 }
 
 /*
-
+list
 Í¨ÓÃÁ´±í
-
 */
 
 void listhead_init(list_head *list)
@@ -229,6 +228,23 @@ void list_remove_chain(list_head *ch, list_head *ct)
 {
 	ch->prev->next = ct->next;
 	ct->next->prev = ch->prev;
+}
+
+/*
+mem
+*/
+void *memcpy(const void *src, void *des, u32 size)
+{
+	if(src ==NULL || des == NULL)
+		return NULL;
+
+	s8 *sr = (s8 *)src;
+	s8 *de = (s8 *)des;
+	while(size--)
+	{
+		*de++ = *sr++;
+	}
+	return des;
 }
 
 
