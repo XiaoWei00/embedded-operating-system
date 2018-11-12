@@ -26,7 +26,7 @@ static void *ramdisk_dout(storage *sd, u32 addr, void *des, u32 size)
 
 static void *ramdisk_din(storage *sd, u32 addr, void *src, u32 size)
 {
-	return memcpy(src, (s8 *)(sd->start_pos + addr),size);
+	return memcpy(src, (char *)(sd->start_pos + addr),size);
 }	
 
 static s32 storage_register(u32 num, storage *sd)
@@ -55,6 +55,7 @@ int ramdisk_init(void)
 {
 	return storage_register(RAMDISK,&ramdisk);	
 }	
+
 
 
 

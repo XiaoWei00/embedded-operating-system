@@ -172,6 +172,18 @@ int printfk(const char *fmt,...)
 }
 
 /*
+debug
+*/
+void info(char *information)
+{
+	#if INFO 
+	printfk(information);
+	printfk("\r\n");
+	#endif
+}
+
+
+/*
 list
 Í¨ÓÃÁ´±í
 */
@@ -247,4 +259,57 @@ void *memcpy(const void *src, void *des, u32 size)
 	return des;
 }
 
+/*
+string
+*/
 
+u32 strlen(const char *str)
+{
+	
+	if(str == NULL)
+		return 0;	
+
+	u32 count = 0;
+
+	while(*str++ != '\0')
+	{
+		count++;
+	}	
+	return count;
+}
+
+s32 strcmp(const char *str1,const char *str2)
+{	
+	if(str1 == NULL && str2 == NULL)
+		return 0;
+	if(str1 == NULL)
+		return -1;
+	if(str2 == NULL)
+		return 1;
+
+	u32 i = 0, j = 0;
+	while(!(str1[i] == '\0' || str2[j] == '\0'))
+	{
+		if(str1[i] > str2[j])
+		{
+			return 1;
+		}
+		else if(str1[i] < str2[j])
+		{
+			return -1;
+		}	
+		i++;
+		j++;
+	}	
+	if(str1[i] == '\0' && str2[j] == '\0')
+		return 0;
+	if(str1[i] == '\0')
+	{
+		return -1;
+	}
+	else
+	{
+		return 1;
+	}	
+	
+}

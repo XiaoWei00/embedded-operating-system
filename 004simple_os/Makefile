@@ -24,7 +24,7 @@ all:$(OBJS)
 	$(LD) -T $(LDS) $^  -o $(TARGET)  
 		
 %.o: %.S %.c
-	$(CC) $< -o $@ 	
+	$(CC) -static -nostartfiles -nostdlib  $< -o $@ 	
 	
 
 sinclude $(INSRCS:.c=.d)

@@ -24,7 +24,19 @@ typedef unsigned long long int u64;
 #define size_t u32
 #define addr_t u32
 
+#define bool s8 
+#define FALSE 0
+#define TRUE (!FALSE)
 
+/*大端--->小端*/
+#define b2s_32_endian(bytes) \
+	(u32)( 	\
+	((((u32)(bytes)) & (0xff000000U)) >> 24) | 	\
+	((((u32)(bytes)) & (0x00ff0000U)) >> 8 ) |	\
+    ((((u32)(bytes)) & (0x0000ff00U)) << 8)  |	\
+	((((u32)(bytes)) & (0x000000ffU)) << 24)	)	
 
+/*小端--->大端*/
+#define s2b_32_endian(bytes) b2s_32_endian(bytes)
 
 #endif

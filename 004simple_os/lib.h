@@ -15,6 +15,7 @@ typedef char * va_list;
 #define va_arg(ap,v)	*((v *)((ap += _INTSIZEOFF(v)) - _INTSIZEOFF(v)))
 #define va_end(ap) ap = (va_list)0
 
+
 int printfk(const char *fmt,...);
 
 
@@ -24,6 +25,12 @@ typedef void (*p_putstr)(const char *);
 extern p_putstr out_str;
 
 
+/*
+debug
+*/
+#define INFO 1
+
+void info(char * information);
 /*
 list
 
@@ -62,11 +69,17 @@ void list_remove_chain(list_head * ch, list_head * ct);
 
 
 /*
-
-mem
-
+memory
 */
 void *memcpy(const void *src, void *des, u32 size);
+
+/*
+string
+*/
+
+u32 strlen(const char *str);
+s32 strcmp(const char * str1, const char * str2);
+
 
 #endif
 

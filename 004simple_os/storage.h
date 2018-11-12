@@ -1,5 +1,5 @@
 
-#ifndef _STORAGR_H_
+#ifndef _STORAGE_H_
 #define _STORAGE_H_
 
 
@@ -24,7 +24,7 @@ struct storage_t
 	u32 storage_size;
 
 	void *(* dout)(storage *sd, u32 addr, void *des, u32 size);
-	void *(* din)(storage *sd, u32 addr ,void *src, u32 size);	
+	void *(* din)(storage *sd, u32 addr ,const void *src, u32 size);	
 };
 
 
@@ -39,7 +39,7 @@ struct storage_t
 
 #define RAMDISK_SATRT 0X30700000
 
-
+extern storage ramdisk;
 extern storage *storage_device[MAX_STORAGE_NUM];
 
 int ramdisk_init(void);
