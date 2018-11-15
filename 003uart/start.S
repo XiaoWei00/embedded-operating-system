@@ -18,8 +18,30 @@ _start:
 
 	/*异常向量表*/
 	b reset     /*Supervisor相对跳转*/
-	
+	nop
+	nop
+	nop
+	nop
+	nop
+	ldr pc, _irq
+	nop
 
+
+_irq:
+	.word irq
+
+		
+.align 2  /*伪指令，参数为2的指数幂*/
+
+
+irq:
+	sub lr, lr, #4
+	stmfd sp!, {r0-r12,lr}
+  	bl interrupt_process
+  	ldmfd sp!, {r0-r12,pc}^
+
+
+	
 reset:
 	/*关看门狗*/
 	ldr r0, =0x53000000   /*WTCON*/

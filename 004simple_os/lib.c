@@ -259,6 +259,21 @@ void *memcpy(const void *src, void *des, u32 size)
 	return des;
 }
 
+void *memset(void *des,s32 val,size_t size)
+{
+	if(des == NULL || size < 0)
+		return NULL;
+	char *tmpdes = (char *)des;
+
+	while(size > 0)
+	{
+		*tmpdes++ = val;
+		size--;
+	}	
+
+	return des;
+
+}
 /*
 string
 */

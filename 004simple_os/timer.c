@@ -1,10 +1,10 @@
 #include "s3c2440.h"
 #include "timer.h"
 #include "interrupt.h"
+#include "lib.h"
 
 void timer_init(void)
 {
-
 	/*
 	 PCLK 50M
 	 Timer input clock Frequency = PCLK / {prescaler value+1} / {divider value}
@@ -26,10 +26,12 @@ void timer_init(void)
 	TCON |= (1 << 20);
 	TCON &= (~(1 << 21));
 
- 	unmask_int(INT_IIMER4);
+ 	unmask_int(INT_TIMER4);
 }
 
-
-
+void TIMER4_ISR(void)
+{
+	info("timer4 isr");
+}
 
 

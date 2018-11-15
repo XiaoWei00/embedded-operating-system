@@ -3,14 +3,13 @@
 #define _URAT_H_
 
 
-#define UART0_CLK_EN 
+
 /*
 UART channel 0
 RXD0/GPH3
 TXD0/GPH2
 */
-#define TX0  2
-#define RX0  2 
+
 
 
 /*
@@ -30,11 +29,9 @@ Clock Selection      Select PCLK, UEXTCLK or FCLK/n for the UART baud rate.   00
 Tx Interrupt Type  0
 Rx Interrupt Type  0
 */
-#define TX_INT_TYPE 0
-#define RX_INT_TYPE 0
-#define TX_MODE  0
 #define RX_EN 1
 #define TX_EN 1
+
 
 
 /*
@@ -51,16 +48,9 @@ UBRDIVn = (int)( UART clock / ( buad rate x 16) ) ¨C1
 UART clock : PCLK  50MHz
 */
 
-#define BAUD_RATE 26  /*(115200)*/
 
-
-
-
-
-
-
-
-
+#define BAUD_RATE_115200 26  /*(115200)*/
+#define BAUB_RATE_9600 324 
 
 
 void uart_init(void);

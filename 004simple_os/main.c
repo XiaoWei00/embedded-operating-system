@@ -11,7 +11,7 @@ typedef void (*init_func)(void);
 
 static init_func init[]={
 	uart_init,
-	//timer_init,
+	timer_init,
 	page_map_init,
 	NULL
 };
@@ -32,6 +32,13 @@ void delay(void)
 		for(j = 0 ; j < 100;j++);
 }	
 
+
+//exefile
+char *exefileBuff = NULL;
+u32 exefileSize = 0;
+u8 exefileFlag = 0;
+
+
 char c = 'a';
 int main(void)
 {
@@ -49,14 +56,10 @@ int main(void)
 	/*device driver*/
 	
 /*
-	
-
 	s8 buff[10] = {'0','1','2','3','4','5','6','7','8','9'};
-
 	
 	storage_device[RAMDISK]->dout(storage_device[RAMDISK],0,buff,sizeof(buff));
 
-	
 	for(i = 0; i < sizeof(buff); i++)
 	{
 		printfk("%c\r\n",buff[i]);
@@ -82,8 +85,7 @@ int main(void)
 		printfk("size=%x\r\n",size);
 
 		printfk("b2s(size)=%x\r\n",b2s_32_endian(size));//size
-		
-		
+				
 		printfk("cs=%x\r\n",*((u32 *)(testbuff + 12)));
 		
 		printfk("name=%s\r\n",testbuff + 16);
@@ -92,25 +94,62 @@ int main(void)
 		
 
 	/*write file from buff to file system*/
-	char wfilebuff[] = "0123456789";
+/*	char wfilebuff[] = "0123456789";
 	fileSys[ROMFS]->fs_write_file(wfilebuff,sizeof(wfilebuff),"root/number");
-
+*/
 
 	/*Read files from file system to  buff*/
-
-	char rfilebuff[20] = {0};
+/*	char rfilebuff[20] = {0};
 	fileSys[ROMFS]->fs_read_file(rfilebuff,"root/number");
-
+/*
 	printfk("number.txt:\r\n");
 	for(i = 0; i < sizeof(rfilebuff); i++)
 	{
 		printfk("%c\r\n",rfilebuff[i]);
 	}
+*/
 
 
+	GPFCON = 0x0100;	
+	GPFDAT = 0;
+	/* receive executable file from uart to exefilebuff */
+	exefileBuff = (char *)kmalloc(512);
+	memset(exefileBuff, 0, 512);
 
+	while(1)
+	{
+
+		if(exefileFlag)
+		{	
+			info("exefile");
+			
+			exefileFlag = 0;
 		
+			fileSys[ROMFS]->fs_write_file(exefileBuff,exefileSize,"root/test");
 
+			char *rexefileBuff = (char *)kmalloc(exefileSize);
+			
+			fileSys[ROMFS]->fs_read_file(rexefileBuff,"root/test");
+
+				
+			printfk("test\r\n");
+			for(i = 0; i < (exefileSize - 1); i++)
+			{
+				printfk("%c\r\n",rexefileBuff[i]);
+			}
+		
+			kfree(rexefileBuff);
+			
+			exefileSize = 0;
+			
+		}
+
+
+	}	
+		
+	kfree(exefileBuff);
+
+	
 	/*printfk*/
 /*
 	char *p = "this is a string";
@@ -161,15 +200,24 @@ int main(void)
 	kfree(p5);
 	kfree(p6);
 */	
-	GPFCON = 0x0100;	
-	GPFDAT = 0;
-	/*	
+	
+/*	
 	while(1)
 	{
-		printfk("wait\r\n");
-		delay();
+		
+		char tmp = uart_read_byte();
+		uart_send_byte(tmp);
+	
+		
+		if(testbuffsize >= 4)
+		{
+			printfk("%s\r\n",testbuff);
+			testbuffsize = 0;
+		}	
 	}
-	*/
+*/
+	
+
 	return 0;
 	
 }

@@ -72,7 +72,7 @@ void list_remove_chain(list_head * ch, list_head * ct);
 memory
 */
 void *memcpy(const void *src, void *des, u32 size);
-
+void *memset(void * des, s32 val, size_t size);
 /*
 string
 */

@@ -51,8 +51,8 @@ UBRDIVn = (int)( UART clock / ( buad rate x 16) ) ¨C1
 UART clock : PCLK  50MHz
 */
 
-#define BAUD_RATE 26  /*(115200)*/
-
+#define BAUD_RATE_115200 26  /*(115200)*/
+#define BAUB_RATE_9600 324
 
 
 
