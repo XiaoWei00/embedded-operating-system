@@ -11,7 +11,7 @@ typedef void (*init_func)(void);
 
 static init_func init[]={
 	uart_init,
-	timer_init,
+//	timer_init,
 	page_map_init,
 	NULL
 };
@@ -32,6 +32,16 @@ void delay(void)
 		for(j = 0 ; j < 100;j++);
 }	
 
+// output
+// input
+// clobbered registers
+void exec(u32 exeaddr)
+{
+	asm volatile(
+	"mov pc, r0\n\t"    /*code*/  			
+	);
+}
+
 
 //exefile
 char *exefileBuff = NULL;
@@ -48,7 +58,7 @@ int main(void)
 	int i = 0;
 
 	kmalloc_init();
-	
+
 	ramdisk_init();
 		
 	fs_init();
@@ -112,8 +122,9 @@ int main(void)
 
 	GPFCON = 0x0100;	
 	GPFDAT = 0;
+	
 	/* receive executable file from uart to exefilebuff */
-	exefileBuff = (char *)kmalloc(512);
+/*	exefileBuff = (char *)kmalloc(512);
 	memset(exefileBuff, 0, 512);
 
 	while(1)
@@ -135,7 +146,7 @@ int main(void)
 			printfk("test\r\n");
 			for(i = 0; i < (exefileSize - 1); i++)
 			{
-				printfk("%c\r\n",rexefileBuff[i]);
+				printfk("%c",rexefileBuff[i]);
 			}
 		
 			kfree(rexefileBuff);
@@ -148,8 +159,51 @@ int main(void)
 	}	
 		
 	kfree(exefileBuff);
+*/
+
+	/*execute user program*/
+	exefileBuff = (char *)get_free_pages(5);
+	if(exefileBuff == NULL)
+	{
+		info("malloc exefileBuff is error");
+		return 0;
+	}	
+	//memset(exefileBuff,0,40960);
+	while(1)
+	{
+		if(exefileFlag == 1)
+		{
+			info("receive exe file");
+
+			exefileFlag = 0;
+			
+			fileSys[ROMFS]->fs_write_file(exefileBuff,exefileSize,"root/exe");
+	
+			char *rfileBuff = (char *)get_free_pages(5);
+			if(rfileBuff == NULL)
+			{
+				info("malloc rfileBuff is error");
+				return 0;
+			}
+			
+			fileSys[ROMFS]->fs_read_file(rfileBuff,"root/exe");
+
+			
+			exefileSize = 0;
+	        /*user space starts at 0x30100000*/	
+		  	u32 exeAddr = elf_get_exeaddr(rfileBuff);
+
+			put_free_pages(rfileBuff,5);
+
+			put_free_pages(exefileBuff,5);
+			
+			exec(exeAddr);
+		}	
+				
+	}
 
 	
+
 	/*printfk*/
 /*
 	char *p = "this is a string";
@@ -169,22 +223,38 @@ int main(void)
 	printfk("%x\r\n",t);
 	printfk("%o\r\n",t);
 */
+
+
     /*memory manage*/
+/*
 
-
-/*	
 	s8 *p1 = (s8 *)get_free_pages(0);
 	printfk("p1 = %x\r\n",p1);
 
-	s8 *p2 = (s8 *)get_free_pages(6);
+	s8 *p2 = (s8 *)get_free_pages(4);
 	printfk("p2 = %x\r\n",p2);
 
-	s8 *p3 = get_free_pages(8);
+	s8 *p3 = (char *)get_free_pages(3);
 	printfk("p3 = %x\r\n",p3);
 	
 	put_free_pages(p1,0);
-	put_free_pages(p2,0);
-	put_free_pages(p3,0);
+	put_free_pages(p2,4);
+	put_free_pages(p3,3);
+
+	
+
+	p1 = (s8 *)get_free_pages(0);
+	printfk("p1 = %x\r\n",p1);
+
+	p2 = (s8 *)get_free_pages(2);
+	printfk("p2 = %x\r\n",p2);
+
+	p3 = (char *)get_free_pages(1);
+	printfk("p3 = %x\r\n",p3);
+	
+	put_free_pages(p1,0);
+	put_free_pages(p2,2);
+	put_free_pages(p3,1);
 
 
 	s8 *p4 = (s8 *)kmalloc(18);
@@ -193,14 +263,13 @@ int main(void)
 	s8 *p5 = (s8 *)kmalloc(44);
 	printfk("p5 = %x\r\n",p5);
 
-	s8 *p6 = kmalloc(345);
+	s8 *p6 = (s8 *)kmalloc(345);
 	printfk("p6 = %x\r\n",p6);
 	
 	kfree(p4);
 	kfree(p5);
 	kfree(p6);
 */	
-	
 /*	
 	while(1)
 	{

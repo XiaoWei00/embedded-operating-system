@@ -1,15 +1,17 @@
 #include "memory.h"
 
+#include "lib.h"
+
 /*
 buddy
 */
 
-static list_head page_buddy[MAX_BUDDY_PAGE_NUM];
+static list_head page_buddy[BUDDY_TYPE];
 
 static void page_buddy_init(void)
 {
 	int i =0;
-	for(i = 0; i < MAX_BUDDY_PAGE_NUM; i++)
+	for(i = 0; i < BUDDY_TYPE; i++)
 	{
 		listhead_init(&page_buddy[i]);
 	}
@@ -31,17 +33,17 @@ void page_map_init(void)
 		{
 			if((i & PAGE_NUM_FOR_MAX_BUDDY) == 0)
 			{
-				pg->order = (MAX_BUDDY_PAGE_NUM - 1);
+				pg->order = MAX_BUDDY_ORDER;
 			}
 			else
 			{
 				pg->order = -1;
 			}	
-			list_add_tail(&page_buddy[MAX_BUDDY_PAGE_NUM - 1],&(pg->list));
+			list_add_tail(&page_buddy[MAX_BUDDY_ORDER],&(pg->list));
 		}
 		else
 		{
-			pg->order = 0;
+			pg->order = 0;	
 			list_add_tail(&page_buddy[0],&(pg->list));
 		}	
 	}	
@@ -53,7 +55,7 @@ static page *get_pages_from_list(s32 order)
 {
 	s32 tmporder = order;
 	page *pg = NULL;
-	for(; tmporder < MAX_BUDDY_PAGE_NUM; tmporder++)
+	for(; tmporder < BUDDY_TYPE; tmporder++)
 	{	
 		if(list_empty(&page_buddy[tmporder]))
 		{
@@ -96,11 +98,30 @@ static void put_pages_to_list(page *pg, s32 order)
 	}
 	pg->flags &= ~PAGE_BUDDY_BUSY;
 
-	for(; order < MAX_BUDDY_PAGE_NUM; order++)
-	{
-		page *npg = next_buddy(pg, order);
-		page *ppg = prev_buddy(pg, order);
-		if(((npg->flags & PAGE_BUDDY_BUSY) == 0) && (npg->order == order))
+	bool nFlag = TRUE , pFlag = TRUE;
+	page *npg = pg;
+	page *ppg = pg;	
+	for(; order < (BUDDY_TYPE - 1); order++)
+	{	
+		if(nFlag == TRUE)
+			npg = next_buddy(pg, order);
+		
+		if((u32)npg >= PAGE_T_END)
+		{
+			npg = pg;
+			nFlag = FALSE;
+		}
+
+		if(pFlag == TRUE)
+			ppg = prev_buddy(pg, order);
+		
+		if((u32)ppg < PAGE_T_START)
+		{
+			ppg = pg;
+			pFlag = FALSE;
+		}
+		
+		if(nFlag == TRUE && ((npg->flags & PAGE_BUDDY_BUSY) == 0) && (npg->order == order))
 		{
 			list_head *nch = &(npg->list);
 			list_head *nct = &(buddy_end(npg, order)->list);
@@ -118,14 +139,14 @@ static void put_pages_to_list(page *pg, s32 order)
 			
 			continue;
 		}
-		else if(((ppg->flags & PAGE_BUDDY_BUSY) == 0) && (ppg->order == order))
+		else if(pFlag == TRUE && ((ppg->flags & PAGE_BUDDY_BUSY) == 0) && (ppg->order == order))
 		{
 			list_head *pch = &(ppg->list);
 			list_head *pct = &(buddy_end(ppg, order)->list);
 
 			list_remove_chain(pch,pct);
 
-			ppg->order = order+1;
+			ppg->order = order + 1;
 
 			pg->order = -1;
 
@@ -142,10 +163,9 @@ static void put_pages_to_list(page *pg, s32 order)
 		{
 			break;
 		}	
-
-		list_add_chain_head(&page_buddy[order],&(pg->list), &(buddy_end(pg, order)->list));
 	
 	}
+	list_add_chain_head(&page_buddy[order],&(pg->list), &(buddy_end(pg, order)->list));
 }
 
 static page *alloc_pages(s32 order)
@@ -169,6 +189,9 @@ static void *page_addr(page *pg)
 }	
 void *get_free_pages(s32 order)
 {
+	if(order < 0 || order > 8)
+		return NULL;
+	
 	page *pg = alloc_pages(order);
 	if(pg == NULL)
 		return NULL;
@@ -192,6 +215,8 @@ static void free_pages(page *pg,s32 order)
 }	
 void put_free_pages(void *addr,s32 order)
 {
+	if(addr == NULL || order < 0 || order > 8)
+		return ;
 	free_pages(addr_page((u32)addr),order);
 }	
 
@@ -228,10 +253,13 @@ static u32 manage_memcache(void *addr,s8 order,u32 size)
 	
 	return num;
 }	
+
+
 static memcache *creat_memcache(memcache *mc, u32 size)
 {
 	
 	s8 order = memcachesize_order(size);
+
 	if(order == -1)
 		return NULL;
 	
@@ -241,7 +269,7 @@ static memcache *creat_memcache(memcache *mc, u32 size)
 	
 	mc->memcachePageStart = pg;
 	int i = 0;
-	for(; i < (1 << order); i++)
+	for(i = 0; i < (1 << order); i++)
 	{
 		(pg + i)->pmc = mc;
 	}		

@@ -21,14 +21,14 @@ typedef struct page_s
 #define PAGE_T_SIZE (sizeof(page))
 
 #define CMEM_END 0X30700000
-#define CMEM_START 0X300F0000
+#define CMEM_START 0X30300000 
 
-#define PAGE_T_START (PAGE_T_END - (PAGE_NUM * PAGE_T_SIZE))
-#define PAGE_T_END CMEM_END
+#define PAGE_T_START (PAGE_T_END - (PAGE_NUM * PAGE_T_SIZE)) //  0X306A090
+#define PAGE_T_END CMEM_END //0X3070 0000 
 
-#define PAGE_START ((CMEM_START + ~(PAGE_MASK)) & (PAGE_MASK))/*4KB¶ÔÆë*/
-#define PAGE_END ((CMEM_END - PAGE_START)/ (PAGE_SIZE + PAGE_T_SIZE) * PAGE_SIZE) + PAGE_START
-#define PAGE_NUM ((PAGE_END - PAGE_START) / PAGE_SIZE)
+#define PAGE_START ((CMEM_START + ~(PAGE_MASK)) & (PAGE_MASK))/*4KB¶ÔÆë*/ //0X30300000 
+#define PAGE_END ((CMEM_END - PAGE_START)/ (PAGE_SIZE + PAGE_T_SIZE) * PAGE_SIZE) + PAGE_START //4169728 0X3FA000 0X306FA000
+#define PAGE_NUM ((PAGE_END - PAGE_START) / PAGE_SIZE)//1018
 
 /*
 buddy
@@ -40,9 +40,10 @@ flags
 #define PAGE_DIRTY 0X01
 #define PAGE_BUDDY_BUSY 0X02
 
-#define MAX_BUDDY_PAGE_NUM (9)
+#define MAX_BUDDY_ORDER 8
+#define BUDDY_TYPE  (MAX_BUDDY_ORDER + 1)
 
-#define PAGE_NUM_FOR_MAX_BUDDY ((1 << MAX_BUDDY_PAGE_NUM) - 1)
+#define PAGE_NUM_FOR_MAX_BUDDY ((1 << MAX_BUDDY_ORDER) - 1)
 
 #define buddy_end(pg,order) ((pg) + ((1 << (order)) - 1))
 #define next_buddy(pg,order) ((pg) + (1 << (order))) 
@@ -79,7 +80,7 @@ typedef struct memcache_s
 kmalloc
 */
 
-#define SLAB_MAX_SIZE 4096
+#define SLAB_MAX_SIZE 1024
 #define SLAB_BASE_SIZE 32
 #define SLAB_NUM (SLAB_MAX_SIZE / SLAB_BASE_SIZE)
 
