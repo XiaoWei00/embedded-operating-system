@@ -29,9 +29,12 @@ void timer_init(void)
  	unmask_int(INT_TIMER4);
 }
 
+
+u32 sysTicks = 0;
 void TIMER4_ISR(void)
 {
-	info("timer4 isr");
+	//info("timer4 isr");
+	sysTicks++;
 }
 
 

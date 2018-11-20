@@ -11,7 +11,7 @@ typedef void (*init_func)(void);
 
 static init_func init[]={
 	uart_init,
-//	timer_init,
+	timer_init,
 	page_map_init,
 	NULL
 };
@@ -123,6 +123,14 @@ int main(void)
 	GPFCON = 0x0100;	
 	GPFDAT = 0;
 	
+	/*system call*/
+	while(1)
+	{	
+		u32 ticks = get_ticks("get_ticks\r\n");
+		printfk("ticks=%d",ticks);
+		delay();
+	}	
+	
 	/* receive executable file from uart to exefilebuff */
 /*	exefileBuff = (char *)kmalloc(512);
 	memset(exefileBuff, 0, 512);
@@ -162,7 +170,7 @@ int main(void)
 */
 
 	/*execute user program*/
-	exefileBuff = (char *)get_free_pages(5);
+/*	exefileBuff = (char *)get_free_pages(5);
 	if(exefileBuff == NULL)
 	{
 		info("malloc exefileBuff is error");
@@ -191,7 +199,7 @@ int main(void)
 			
 			exefileSize = 0;
 	        /*user space starts at 0x30100000*/	
-		  	u32 exeAddr = elf_get_exeaddr(rfileBuff);
+/*		  	u32 exeAddr = elf_get_exeaddr(rfileBuff);
 
 			put_free_pages(rfileBuff,5);
 
@@ -202,7 +210,7 @@ int main(void)
 				
 	}
 
-	
+*/	
 
 	/*printfk*/
 /*

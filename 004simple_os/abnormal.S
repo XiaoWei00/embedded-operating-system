@@ -16,11 +16,51 @@ undef_ins:
 	nop
 		
 swi:
-	stmfd sp!, {r0-r12,lr}
 
-	//bl system_call
-		
-	ldmfd sp!, {r0-r12,pc}^
+	str lr, [sp, #-0x4]
+	
+	mrs lr, spsr
+	str lr, [sp, #-0x8]
+	
+	
+	str r0, [sp, #-0xc]
+	mov r0, sp
+	
+	TO_SYSMOD
+
+	str lr, [sp, #-0x8]
+	
+	ldr lr, [r0, #-0x4]
+	str lr, [sp, #-0x4] //
+	
+	ldr lr, [r0, #-0x8] //spsr
+	ldr r0, [r0, #-0xc]
+	sub sp, sp, #0x8
+
+	stmfd sp!, {r0-r12,lr}//lr --spsr
+/*
+	mov r0, sp
+	ldr r1, =SVC_STACK
+	bl stack_print
+*/
+	ldr r0, [sp, #0x3c] 
+	sub r0, r0, #4
+	ldr r0, [r0]
+	
+	ldr r1, [sp, #0x48] 
+	ldr r2, [sp, #0x44]  
+	ldr r3, [sp, #0x38]
+	
+	bl system_call
+
+	str r0, [sp, #64] 
+	
+	ldmfd sp!, {r0-r12,lr}
+
+	msr spsr, lr
+	ldmfd sp!, {lr,pc}^
+	
+
 abort_ins:
 	nop
 		
@@ -55,21 +95,29 @@ irq:
 */	
   	//ÖĞ¶ÏÇ¶Ì×ÓÅ»¯
 	sub lr, lr, #4
+	
 	str lr, [sp, #-0x4]
+	
 	mrs lr, spsr
 	str lr, [sp, #-0x8]
+	
 	mov r0, sp
 	str r0, [sp, #-0xc]
+	
 	TO_SVCMOD
-	str lr, [sp, #-0x8]
+
+  	str lr, [sp, #-0x8]
+	
 	ldr lr, [r0, #-0x4]
 	str lr, [sp, #-0x4] //lr_irq
 	ldr lr, [r0, #-0x8] //spsr
 	ldr r0, [r0, #-0xc]
 	sub sp, sp, #0x8
+	
 	stmfd sp!, {r0-r12,lr}//lr --spsr
 	bl interrupt_process
 	ldmfd sp!, {r0-r12,lr}
+
 	msr spsr, lr
 	ldmfd sp!, {lr,pc}^
 

@@ -4,18 +4,7 @@
 
 #include "armv4t.h"
 
-/*堆栈*/
-.equ STACK_TOP,  0x1000 /*4KB*/
 
-.equ NAND_BASE,  0
-.equ NOR_BASE, 0x40000000
-
-.equ SVC_STACK,  STACK_TOP
-.equ FIQ_STACK, (SVC_STACK - 0x154)   /*340个字节*/
-.equ IRQ_STACK, (FIQ_STACK - 0x154)	
-.equ UND_STACK, (IRQ_STACK - 0x154)	
-.equ ABT_STACK, (UND_STACK - 0x154)
-.equ SYS_STACK, (ABT_STACK - 0x154) /*usr sys*/	
 
 .text
 .global _start
@@ -103,6 +92,8 @@ nand_start:
 
 	TO_SYSMOD
 	ldr sp, =(SYS_STACK + NAND_BASE)
+
+	
 	
 	b  level1_init
 
@@ -126,6 +117,7 @@ nor_start:
 
 	TO_SYSMOD
 	ldr sp, =(SYS_STACK + NOR_BASE)
+
 
 //	ldr sp, =4096+0x40000000   /*nor启动*/
 //	ldr sp, =4096
@@ -154,6 +146,8 @@ level1_init:
 	bl nandflash_init
 	bl copy2sdram
 	bl bss_init
+
+	TO_USRMOD
 /*主程序*/
 	ldr lr, =halt
 	ldr pc, =main

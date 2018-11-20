@@ -3,7 +3,18 @@
 #define _ARMV4T_H_
 
 
+/*堆栈*/
+.equ STACK_TOP,  0x1000 /*4KB*/
 
+.equ NAND_BASE,  0
+.equ NOR_BASE, 0x40000000
+
+.equ SVC_STACK,  STACK_TOP
+.equ FIQ_STACK, (SVC_STACK - 0x154)   /*340个字节*/
+.equ IRQ_STACK, (FIQ_STACK - 0x154)	
+.equ UND_STACK, (IRQ_STACK - 0x154)	
+.equ ABT_STACK, (UND_STACK - 0x154)
+.equ SYS_STACK, (ABT_STACK - 0x154) /*usr sys*/	
 
 /*模式,CPSR寄存器*/
 
@@ -59,3 +70,5 @@ f 标志域掩码 (PSR [31:24])
 	msr cpsr_c, #(DISABLE_IRQ | DISABLE_FIQ | USR_MOD)
 .endm
 #endif
+
+
