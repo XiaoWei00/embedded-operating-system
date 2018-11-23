@@ -6,13 +6,13 @@
 #include "memory.h"
 #include "storage.h"
 #include "fs.h"
+#include "task.h"
 
 typedef void (*init_func)(void);
 
 static init_func init[]={
 	uart_init,
 	timer_init,
-	page_map_init,
 	NULL
 };
 
@@ -42,6 +42,15 @@ void exec(u32 exeaddr)
 	);
 }
 
+int test_task(void *p)
+{
+	while(1)
+	{
+		printfk("test task %d\r\n",(u32)p);
+		delay();
+	}	
+}	
+
 
 //exefile
 char *exefileBuff = NULL;
@@ -52,19 +61,34 @@ u8 exefileFlag = 0;
 char c = 'a';
 int main(void)
 {
-	enable_irq();
+	
 	hardware_init(init);
+	
+/*	
+	//test usr mode and sys mode 
+	
+	u32 cpsr = get_cpsr();
+	uart_send_byte((char)(cpsr));
+	disable_irq();
+	cpsr = get_cpsr();
+	uart_send_byte((char)(cpsr));
+
+*/
+
 
 	int i = 0;
 
+	page_map_init();
+	
 	kmalloc_init();
 
 	ramdisk_init();
 		
 	fs_init();
 	
+	enable_irq();
+
 	/*device driver*/
-	
 /*
 	s8 buff[10] = {'0','1','2','3','4','5','6','7','8','9'};
 	
@@ -120,17 +144,33 @@ int main(void)
 */
 
 
-	GPFCON = 0x0100;	
+	GPFCON = 0x0100;
 	GPFDAT = 0;
+
+	/*process / task*/
+	task_init();
 	
+	do_fork(test_task,(void *)1);
+	do_fork(test_task,(void *)2);
+
+	while(1)
+	{
+		printfk("this is kernel task\r\n");
+		delay();
+	}	
+
+
 	/*system call*/
+/*
 	while(1)
 	{	
 		u32 ticks = get_ticks("get_ticks\r\n");
-		printfk("ticks=%d",ticks);
+		
+		printfk("ticks=%d\r\n",sysTicks);
 		delay();
 	}	
-	
+*/
+
 	/* receive executable file from uart to exefilebuff */
 /*	exefileBuff = (char *)kmalloc(512);
 	memset(exefileBuff, 0, 512);
@@ -278,23 +318,15 @@ int main(void)
 	kfree(p5);
 	kfree(p6);
 */	
+
 /*	
 	while(1)
 	{
 		
 		char tmp = uart_read_byte();
 		uart_send_byte(tmp);
-	
-		
-		if(testbuffsize >= 4)
-		{
-			printfk("%s\r\n",testbuff);
-			testbuffsize = 0;
-		}	
 	}
 */
-	
-
 	return 0;
 	
 }

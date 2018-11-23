@@ -183,6 +183,31 @@ void info(char *information)
 }
 
 
+
+void stack_print(u32 sp,s8 sign)
+{
+	u32 *psp = (u32 *)sp;
+	
+	printfk("spaddr=%x\r\n",(u32)psp);
+	
+	u32 i = 0;
+	for(i = 0; i <= 16; i++)
+	{
+		if(sign == 1)
+		{	
+			printfk("+sp=%x\r\n",*(psp + i));
+		}
+		else
+		{
+			printfk("-sp=%x\r\n",*(psp - i));
+		}	
+	}
+}	
+
+
+
+
+
 /*
 list
 Í¨ÓÃÁ´±í

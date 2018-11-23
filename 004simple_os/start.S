@@ -147,7 +147,7 @@ level1_init:
 	bl copy2sdram
 	bl bss_init
 
-	TO_USRMOD
+//	TO_USRMOD
 /*Ö÷³ÌÐò*/
 	ldr lr, =halt
 	ldr pc, =main

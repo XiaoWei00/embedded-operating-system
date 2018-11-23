@@ -31,6 +31,9 @@ debug
 #define INFO 1
 
 void info(char * information);
+
+void stack_print(u32 sp,s8 sign);
+
 /*
 list
 

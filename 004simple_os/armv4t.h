@@ -18,8 +18,8 @@
 
 /*Ä£Ê½,CPSR¼Ä´æÆ÷*/
 
-.equ DISABLE_IRQ,   0x80
-.equ DISABLE_FIQ,	0x40
+.equ DISABLE_IRQ,   0x80 //1000 0000
+.equ DISABLE_FIQ,	0x40 //0100 0000
 
 
 .equ SVC_MOD,   0b10011

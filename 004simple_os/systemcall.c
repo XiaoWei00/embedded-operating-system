@@ -49,20 +49,4 @@ u32 sys_get_ticks(u32 pnum,u32 pdata)
 }		
 
 
-/*
-void stack_print(u32 syssp,u32 svcsp)
-{
-	u32 *sysp = (u32 *)syssp;
-	u32 *svcp = (u32 *)svcsp;
-	
-	u32 i = 0;
-	for(i = 0; i <= 18; i++)
-	{
-		printfk("syssp=%x\r\n",*(sysp + i));
-	}
-	for(i = 1; i <= 3; i++)
-	{
-		printfk("svcsp=%x\r\n",*(svcp - i));
-	}	
-}	
-*/
+

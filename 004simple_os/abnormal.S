@@ -38,11 +38,7 @@ swi:
 	sub sp, sp, #0x8
 
 	stmfd sp!, {r0-r12,lr}//lr --spsr
-/*
-	mov r0, sp
-	ldr r1, =SVC_STACK
-	bl stack_print
-*/
+
 	ldr r0, [sp, #0x3c] 
 	sub r0, r0, #4
 	ldr r0, [r0]
@@ -101,25 +97,44 @@ irq:
 	mrs lr, spsr
 	str lr, [sp, #-0x8]
 	
-	mov r0, sp
+	
 	str r0, [sp, #-0xc]
+	mov r0, sp
 	
 	TO_SVCMOD
-
-  	str lr, [sp, #-0x8]
+/*
+lr_irq  ---pc_sys/usr
+r12
+||
+r0  ---sys/usr
+spsr_irq---cpsr_sys/usr
+*/
+ 
 	
 	ldr lr, [r0, #-0x4]
 	str lr, [sp, #-0x4] //lr_irq
-	ldr lr, [r0, #-0x8] //spsr
-	ldr r0, [r0, #-0xc]
-	sub sp, sp, #0x8
 	
-	stmfd sp!, {r0-r12,lr}//lr --spsr
-	bl interrupt_process
-	ldmfd sp!, {r0-r12,lr}
+	ldr lr, [r0, #-0x8] //spsr_irq
+	
+	ldr r0, [r0, #-0xc]
+	
 
+	sub sp, sp, #0x4
+	
+	stmfd sp!, {r0-r12}
+
+	sub sp, sp, #0x4
+	str lr, [sp] //lr ---spsr
+
+	bl interrupt_process
+
+	ldr lr, [sp]
+	add sp, sp, #0x4
+	
+	ldmfd sp!, {r0-r12}
+	
 	msr spsr, lr
-	ldmfd sp!, {lr,pc}^
+	ldmfd sp!, {pc}^
 
 fiq:
 	nop
