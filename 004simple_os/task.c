@@ -49,6 +49,17 @@ u32 get_cpsr()
 	);
 	return ret;
 }	
+
+u32 get_spsr()
+{
+	u32 ret = 0;
+	asm volatile(
+	"mrs %0, spsr\n\t"
+	:"=r"(ret)
+	:
+	);
+	return ret;
+}
 u32 do_fork(task_fun fun, void *args)
 {
 

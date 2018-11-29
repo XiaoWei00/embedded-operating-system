@@ -4,11 +4,13 @@
 
 #include "type.h"
 
-u32 get_ticks(char *str);
-u32 sys_get_ticks(u32 pnum, u32 pdata);
+u32 get_ticks(void);
+void enable_irq(void);
+void disable_irq(void);
 
 
 
+#define SYSCALLNUM 4
 
 #define SYSCALL(pnum,pdata,id,ret) 	do{ \
 		asm volatile(					\

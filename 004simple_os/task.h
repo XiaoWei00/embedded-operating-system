@@ -36,6 +36,7 @@ bool current_task_over(void);
 task_info *get_current_task_info(void);
 
 u32 get_cpsr(void);
+u32 get_spsr(void);
 
 #endif
 

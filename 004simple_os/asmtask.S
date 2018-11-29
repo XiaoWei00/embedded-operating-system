@@ -61,7 +61,9 @@ preserve_scene:
 	bl common_schedule
 
 //clear interrupt processing in SVC mode
+//default nand flash start
 	TO_SVCMOD
+	
 	ldr sp, =(SVC_STACK + NAND_BASE)
 
 //resume the scene of the next task

@@ -20,10 +20,8 @@
 extern u32 subintSource;
 
 void interrupt_process(void);
-
-void enable_irq(void);
-void disable_irq(void);
-
+void enable_sysirq(void);
+void disable_sysirq(void);
 
 
 /*XXÖÐ¶Ï½ûÖ¹*/

@@ -63,17 +63,21 @@ int main(void)
 {
 	
 	hardware_init(init);
-	
-/*	
-	//test usr mode and sys mode 
+
+/*
 	
 	u32 cpsr = get_cpsr();
-	uart_send_byte((char)(cpsr));
-	disable_irq();
-	cpsr = get_cpsr();
-	uart_send_byte((char)(cpsr));
+	uart_send_byte((char)(cpsr)); // 1 D0
 
+	
+	enable_irq();
+	
+	cpsr = get_cpsr();
+	uart_send_byte((char)(cpsr));  //8 
+
+//	disable_irq();
 */
+	
 
 
 	int i = 0;
@@ -85,9 +89,26 @@ int main(void)
 	ramdisk_init();
 		
 	fs_init();
+
+	enable_irq();
+	
+	
+	//test usr mode and sys mode 
+/*	
+	u32 cpsr = get_cpsr();
+	uart_send_byte((char)(cpsr));
 	
 	enable_irq();
 
+	cpsr = get_cpsr();
+	uart_send_byte((char)(cpsr));
+
+	disable_irq();
+
+	cpsr = get_cpsr();
+	uart_send_byte((char)(cpsr));
+
+*/
 	/*device driver*/
 /*
 	s8 buff[10] = {'0','1','2','3','4','5','6','7','8','9'};
@@ -148,6 +169,7 @@ int main(void)
 	GPFDAT = 0;
 
 	/*process / task*/
+	
 	task_init();
 	
 	do_fork(test_task,(void *)1);
@@ -155,7 +177,9 @@ int main(void)
 
 	while(1)
 	{
-		printfk("this is kernel task\r\n");
+		//printfk("this is kernel task\r\n");
+		u32 ticks = get_ticks();	
+		printfk("ticks=%d\r\n",sysTicks);
 		delay();
 	}	
 
@@ -164,8 +188,7 @@ int main(void)
 /*
 	while(1)
 	{	
-		u32 ticks = get_ticks("get_ticks\r\n");
-		
+		u32 ticks = get_ticks();
 		printfk("ticks=%d\r\n",sysTicks);
 		delay();
 	}	
